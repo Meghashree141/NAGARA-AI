@@ -2,22 +2,26 @@ const Database = require("better-sqlite3");
 const path = require("path");
 const fs = require("fs");
 
-// 1. Create database directory
-const dataDirectory = path.join(__dirname, "..", "data");
+// Use Railway's persistent volume when DB_PATH is configured.
+// Otherwise, use the local development database.
+const dbPath = process.env.DB_PATH ||
+    path.join(__dirname, "..", "data", "nagara.db");
+
+// Create the database directory if it does not exist.
+const dataDirectory = path.dirname(dbPath);
 
 if (!fs.existsSync(dataDirectory)) {
     fs.mkdirSync(dataDirectory, { recursive: true });
 }
 
-// 2. Connect to SQLite database
-const dbPath = path.join(dataDirectory, "nagara.db");
+// Connect to SQLite.
 const db = new Database(dbPath);
 
-// 3. Configure SQLite
+// Configure SQLite.
 db.pragma("journal_mode = WAL");
 db.pragma("foreign_keys = ON");
 
-// 4. Create reports table and indexes
+// Create reports table and indexes.
 db.exec(`
     CREATE TABLE IF NOT EXISTS reports (
         id TEXT PRIMARY KEY,
@@ -57,8 +61,7 @@ db.exec(`
     ON reports(created_at);
 `);
 
-// 5. Confirm database initialization
 console.log("NAGARA AI database initialized successfully!");
+console.log(`Database location: ${dbPath}`);
 
-// 6. Export database connection
 module.exports = db;
