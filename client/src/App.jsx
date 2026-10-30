@@ -398,7 +398,7 @@ function Dashboard() {
               </p>
             </div>
 
-            <a href="/citizen" className="primary-button">
+           <a href="/#/citizen" className="primary-button">
               <Plus size={18} />
               Citizen Portal
             </a>
@@ -791,11 +791,9 @@ function Dashboard() {
 }
 
 function App() {
-  if (window.location.pathname === "/citizen") {
+  if (window.location.hash === "#/citizen") {
     return <CitizenPortal />;
   }
 
   return <Dashboard />;
 }
-
-export default App;
