@@ -36,7 +36,8 @@ import {
 
 import "./App.css";
 
-const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
+const API_URL =
+  import.meta.env.VITE_API_URL || "http://localhost:5000";
 
 const PRIORITY_COLORS = {
   CRITICAL: "#ef4444",
@@ -87,14 +88,16 @@ function Dashboard() {
   const [savingId, setSavingId] = useState(null);
   const [successMessage, setSuccessMessage] = useState("");
 
+  // Load dashboard data.
   async function loadDashboard() {
     try {
       setError("");
 
-      const [reportsResponse, analyticsResponse] = await Promise.all([
-        axios.get(`${API_URL}/api/reports`),
-        axios.get(`${API_URL}/api/analytics`)
-      ]);
+      const [reportsResponse, analyticsResponse] =
+        await Promise.all([
+          axios.get(`${API_URL}/api/reports`),
+          axios.get(`${API_URL}/api/analytics`)
+        ]);
 
       setReports(reportsResponse.data.reports || []);
       setAnalytics(analyticsResponse.data);
@@ -129,14 +132,17 @@ function Dashboard() {
         { status: newStatus }
       );
 
-      setSuccessMessage("Complaint status updated successfully!");
+      setSuccessMessage(
+        "Complaint status updated successfully!"
+      );
 
       await loadDashboard();
     } catch (err) {
       console.error("Status update error:", err);
 
       setError(
-        err.response?.data?.message || "Unable to update complaint status."
+        err.response?.data?.message ||
+          "Unable to update complaint status."
       );
     } finally {
       setSavingId(null);
@@ -148,7 +154,9 @@ function Dashboard() {
     const officerName = officerNames[reportId]?.trim();
 
     if (!officerName) {
-      setError("Please enter an officer name before assigning.");
+      setError(
+        "Please enter an officer name before assigning."
+      );
       return;
     }
 
@@ -162,7 +170,9 @@ function Dashboard() {
         { assigned_to: officerName }
       );
 
-      setSuccessMessage(`Complaint assigned to ${officerName}.`);
+      setSuccessMessage(
+        `Complaint assigned to ${officerName}.`
+      );
 
       setOfficerNames((previous) => ({
         ...previous,
@@ -174,7 +184,8 @@ function Dashboard() {
       console.error("Officer assignment error:", err);
 
       setError(
-        err.response?.data?.message || "Unable to assign officer."
+        err.response?.data?.message ||
+          "Unable to assign officer."
       );
     } finally {
       setSavingId(null);
@@ -218,6 +229,7 @@ function Dashboard() {
     }
   ];
 
+  // Validate coordinates before displaying reports on the map.
   const mappedReports = reports.filter((report) => {
     const lat = Number(report.latitude);
     const lng = Number(report.longitude);
@@ -246,13 +258,16 @@ function Dashboard() {
         ]
       : [12.3, 76.6];
 
+  // Group complaints with matching coordinates.
   const groupedReports = Object.values(
     mappedReports.reduce((groups, report) => {
       const key = `${Number(report.latitude).toFixed(4)},${Number(
         report.longitude
       ).toFixed(4)}`;
 
-      if (!groups[key]) groups[key] = [];
+      if (!groups[key]) {
+        groups[key] = [];
+      }
 
       groups[key].push(report);
 
@@ -262,17 +277,17 @@ function Dashboard() {
 
   return (
     <div className="dashboard">
-
       {/* SIDEBAR */}
       <aside className="sidebar">
-
         <div className="brand">
           <div className="brand-icon">
             <Waves size={25} />
           </div>
 
           <div>
-            <h2>NAGARA<span>AI</span></h2>
+            <h2>
+              NAGARA<span>AI</span>
+            </h2>
             <p>CIVIC INTELLIGENCE</p>
           </div>
         </div>
@@ -288,7 +303,9 @@ function Dashboard() {
           <a className="nav-item" href="#complaints">
             <FileText size={19} />
             Complaints
-            <span className="nav-count">{overview.total ?? 0}</span>
+            <span className="nav-count">
+              {overview.total ?? 0}
+            </span>
           </a>
 
           <a className="nav-item" href="#map">
@@ -324,7 +341,6 @@ function Dashboard() {
         </nav>
 
         <div className="sidebar-bottom">
-
           <div className="system-status">
             <span className="status-dot"></span>
             <div>
@@ -346,13 +362,11 @@ function Dashboard() {
             </div>
             <ChevronDown size={16} />
           </div>
-
         </div>
       </aside>
 
       {/* MAIN CONTENT */}
       <main className="main-content" id="dashboard">
-
         <header className="topbar">
           <div className="breadcrumb">
             <span>Workspace</span>
@@ -366,11 +380,17 @@ function Dashboard() {
               LIVE SYSTEM
             </div>
 
-            <button className="icon-button" aria-label="Search">
+            <button
+              className="icon-button"
+              aria-label="Search"
+            >
               <Search size={19} />
             </button>
 
-            <button className="icon-button" aria-label="Notifications">
+            <button
+              className="icon-button"
+              aria-label="Notifications"
+            >
               <Bell size={19} />
             </button>
 
@@ -379,7 +399,6 @@ function Dashboard() {
         </header>
 
         <section className="page-content">
-
           {/* WELCOME */}
           <div className="welcome-section">
             <div>
@@ -393,12 +412,15 @@ function Dashboard() {
               </h1>
 
               <p>
-                Monitor public issues, understand city conditions and
-                coordinate faster civic action.
+                Monitor public issues, understand city conditions
+                and coordinate faster civic action.
               </p>
             </div>
 
-           <a href="/#/citizen" className="primary-button">
+            <a
+              href="/#/citizen"
+              className="primary-button"
+            >
               <Plus size={18} />
               Citizen Portal
             </a>
@@ -409,21 +431,29 @@ function Dashboard() {
             <div className="error-banner">
               <AlertTriangle size={18} />
               {error}
-              <button onClick={loadDashboard}>Retry</button>
+              <button onClick={loadDashboard}>
+                Retry
+              </button>
             </div>
           )}
 
           {successMessage && (
-            <div style={{
-              background: "#dcfce7",
-              color: "#166534",
-              padding: "13px 17px",
-              borderRadius: "9px",
-              marginBottom: "20px",
-              fontWeight: 600
-            }}>
-              <CheckCircle2 size={17} style={{ verticalAlign: "middle" }} />
-              {" "}{successMessage}
+            <div
+              style={{
+                background: "#dcfce7",
+                color: "#166534",
+                padding: "13px 17px",
+                borderRadius: "9px",
+                marginBottom: "20px",
+                fontWeight: 600
+              }}
+            >
+              <CheckCircle2
+                size={17}
+                style={{ verticalAlign: "middle" }}
+              />
+              {" "}
+              {successMessage}
             </div>
           )}
 
@@ -445,22 +475,32 @@ function Dashboard() {
               const Icon = stat.icon;
 
               return (
-                <div className="stat-card" key={stat.label}>
+                <div
+                  className="stat-card"
+                  key={stat.label}
+                >
                   <div className="stat-top">
                     <div className={`stat-icon ${stat.color}`}>
                       <Icon size={21} />
                     </div>
 
-                    <ArrowUpRight size={17} className="stat-arrow" />
+                    <ArrowUpRight
+                      size={17}
+                      className="stat-arrow"
+                    />
                   </div>
 
                   <div className="stat-value">
                     {loading ? "—" : stat.value}
                   </div>
 
-                  <div className="stat-label">{stat.label}</div>
+                  <div className="stat-label">
+                    {stat.label}
+                  </div>
 
-                  <div className="stat-description">{stat.change}</div>
+                  <div className="stat-description">
+                    {stat.change}
+                  </div>
                 </div>
               );
             })}
@@ -471,11 +511,13 @@ function Dashboard() {
 
           {/* MAP */}
           <section className="map-section" id="map">
-
             <div className="section-heading map-heading">
               <div>
                 <h3>Geospatial Intelligence</h3>
-                <p>Visualise civic complaints across reported locations</p>
+                <p>
+                  Visualise civic complaints across reported
+                  locations
+                </p>
               </div>
 
               <div className="map-badge">
@@ -485,7 +527,6 @@ function Dashboard() {
             </div>
 
             <div className="map-container">
-
               <MapContainer
                 key={`${mapCenter[0]}-${mapCenter[1]}`}
                 center={mapCenter}
@@ -493,7 +534,6 @@ function Dashboard() {
                 scrollWheelZoom={true}
                 className="leaflet-map"
               >
-
                 <MapAutoFit reports={mappedReports} />
 
                 <TileLayer
@@ -502,7 +542,6 @@ function Dashboard() {
                 />
 
                 {groupedReports.map((group) => {
-
                   const priorityOrder = {
                     CRITICAL: 4,
                     HIGH: 3,
@@ -517,8 +556,9 @@ function Dashboard() {
                   )[0];
 
                   const color =
-                    PRIORITY_COLORS[highestPriorityReport.priority] ||
-                    "#64748b";
+                    PRIORITY_COLORS[
+                      highestPriorityReport.priority
+                    ] || "#64748b";
 
                   return (
                     <CircleMarker
@@ -550,12 +590,21 @@ function Dashboard() {
                               <p>{report.location_name}</p>
                               <p>
                                 <b>Category:</b>{" "}
-                                {report.category?.replaceAll("_", " ")}
+                                {report.category?.replaceAll(
+                                  "_",
+                                  " "
+                                )}
                               </p>
-                              <p><b>Priority:</b> {report.priority}</p>
+                              <p>
+                                <b>Priority:</b>{" "}
+                                {report.priority}
+                              </p>
                               <p>
                                 <b>Status:</b>{" "}
-                                {report.status?.replaceAll("_", " ")}
+                                {report.status?.replaceAll(
+                                  "_",
+                                  " "
+                                )}
                               </p>
                             </div>
                           ))}
@@ -564,7 +613,6 @@ function Dashboard() {
                     </CircleMarker>
                   );
                 })}
-
               </MapContainer>
 
               {mappedReports.length === 0 && (
@@ -573,32 +621,40 @@ function Dashboard() {
                   No complaints with valid coordinates yet.
                 </div>
               )}
-
             </div>
 
             <div className="map-legend">
-              {Object.entries(PRIORITY_COLORS).map(([priority, color]) => (
-                <div className="legend-item" key={priority}>
-                  <span style={{ background: color }}></span>
-                  {priority}
-                </div>
-              ))}
+              {Object.entries(PRIORITY_COLORS).map(
+                ([priority, color]) => (
+                  <div
+                    className="legend-item"
+                    key={priority}
+                  >
+                    <span style={{ background: color }}></span>
+                    {priority}
+                  </div>
+                )
+              )}
             </div>
 
             <div className="map-summary">
               Showing {mappedReports.length} complaint records
               across {groupedReports.length} mapped locations.
             </div>
-
           </section>
 
           {/* ADMIN COMPLAINT MANAGEMENT */}
-          <section className="complaints-section" id="complaints">
-
+          <section
+            className="complaints-section"
+            id="complaints"
+          >
             <div className="section-heading">
               <div>
                 <h3>Admin Complaint Management</h3>
-                <p>Review complaints, update status and assign officers.</p>
+                <p>
+                  Review complaints, update status and assign
+                  officers.
+                </p>
               </div>
 
               <span className="total-badge">
@@ -607,9 +663,7 @@ function Dashboard() {
             </div>
 
             <div className="table-container">
-
               <table>
-
                 <thead>
                   <tr>
                     <th>COMPLAINT</th>
@@ -622,29 +676,27 @@ function Dashboard() {
                 </thead>
 
                 <tbody>
-
                   {loading ? (
-
                     <tr>
-                      <td colSpan="6" className="empty-state">
+                      <td
+                        colSpan="6"
+                        className="empty-state"
+                      >
                         Loading complaints...
                       </td>
                     </tr>
-
                   ) : reports.length === 0 ? (
-
                     <tr>
-                      <td colSpan="6" className="empty-state">
+                      <td
+                        colSpan="6"
+                        className="empty-state"
+                      >
                         No complaints have been submitted yet.
                       </td>
                     </tr>
-
                   ) : (
-
                     reports.map((report) => (
-
                       <tr key={report.id}>
-
                         <td>
                           <div className="complaint-title">
                             {report.title}
@@ -657,7 +709,10 @@ function Dashboard() {
 
                         <td>
                           <span className="category-text">
-                            {report.category?.replaceAll("_", " ")}
+                            {report.category?.replaceAll(
+                              "_",
+                              " "
+                            )}
                           </span>
                         </td>
 
@@ -682,7 +737,10 @@ function Dashboard() {
                             value={report.status}
                             disabled={savingId === report.id}
                             onChange={(event) =>
-                              updateStatus(report.id, event.target.value)
+                              updateStatus(
+                                report.id,
+                                event.target.value
+                              )
                             }
                             style={{
                               padding: "9px",
@@ -694,7 +752,10 @@ function Dashboard() {
                             }}
                           >
                             {STATUS_OPTIONS.map((status) => (
-                              <option key={status} value={status}>
+                              <option
+                                key={status}
+                                value={status}
+                              >
                                 {status.replaceAll("_", " ")}
                               </option>
                             ))}
@@ -703,16 +764,22 @@ function Dashboard() {
 
                         {/* OFFICER ASSIGNMENT */}
                         <td>
-                          <div style={{
-                            display: "flex",
-                            gap: "7px",
-                            minWidth: "210px"
-                          }}>
-
+                          <div
+                            style={{
+                              display: "flex",
+                              gap: "7px",
+                              minWidth: "210px"
+                            }}
+                          >
                             <input
                               type="text"
-                              placeholder={report.assigned_to || "Officer name"}
-                              value={officerNames[report.id] || ""}
+                              placeholder={
+                                report.assigned_to ||
+                                "Officer name"
+                              }
+                              value={
+                                officerNames[report.id] || ""
+                              }
                               disabled={savingId === report.id}
                               onChange={(event) =>
                                 setOfficerNames((previous) => ({
@@ -730,7 +797,9 @@ function Dashboard() {
                             />
 
                             <button
-                              onClick={() => assignOfficer(report.id)}
+                              onClick={() =>
+                                assignOfficer(report.id)
+                              }
                               disabled={savingId === report.id}
                               title="Assign officer"
                               style={{
@@ -748,48 +817,43 @@ function Dashboard() {
                               <Save size={15} />
                               Save
                             </button>
-
                           </div>
 
                           {report.assigned_to && (
-                            <small style={{
-                              display: "block",
-                              marginTop: "6px",
-                              color: "#64748b"
-                            }}>
+                            <small
+                              style={{
+                                display: "block",
+                                marginTop: "6px",
+                                color: "#64748b"
+                              }}
+                            >
                               Assigned: {report.assigned_to}
                             </small>
                           )}
-
                         </td>
-
                       </tr>
-
                     ))
-
                   )}
-
                 </tbody>
-
               </table>
-
             </div>
-
           </section>
 
           {/* FOOTER */}
           <footer className="footer">
             <span>© 2026 NAGARA AI</span>
-            <span>From Citizen Voice to Intelligent Civic Action.</span>
+            <span>
+              From Citizen Voice to Intelligent Civic Action.
+            </span>
             <span>Version 1.0.0</span>
           </footer>
-
         </section>
       </main>
     </div>
   );
 }
 
+// MAIN APP ROUTING
 function App() {
   if (window.location.hash === "#/citizen") {
     return <CitizenPortal />;
@@ -797,3 +861,5 @@ function App() {
 
   return <Dashboard />;
 }
+
+export default App;
